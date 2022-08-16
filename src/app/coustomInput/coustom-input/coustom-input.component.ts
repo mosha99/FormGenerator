@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Feild, fieldTypeEnum } from 'src/app/Form/form/form.component';
 
 
 @Component({
@@ -8,22 +9,23 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 })
 export class CoustomInputComponent implements OnInit {
 
-  @Input() type: string = "";
+  @Input() FeildInfo?: Feild;
+  @Input() Value: string = '';
 
-  @Input() value: string = "";
-
-  @Output() onValueChenge: EventEmitter<any> = new EventEmitter();
-
-
-
-  constructor() { }
 
   ngOnInit(): void {
-
+    this.FeildInfo?.ParentOnchenge?.subscribe((v: any) => {
+      this.Value = v[0];
+      this.OnCheange(v[0]) 
+    });
   }
 
-  onchenge(value:any){
-    this.onValueChenge.emit(value);
+  OnCheange(event: number) {
+    this.FeildInfo?.onchenge?.emit([event]);
+  }
+
+  getfieldTypeEnum() {
+    return fieldTypeEnum;
   }
 }
 

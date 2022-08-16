@@ -1,9 +1,9 @@
 <a href="">fsd</a>
-
-<div *ngFor="let row of getRow()">
-    <div *ngFor="let feild  of getRowFeilds(row)">
-        <p>{{feild['fieldType']}}</p>
-
-        <{{'app-coustom-input'}} [type]="feild['fieldType']"></{{'app-coustom-input'}}>
+<div style="display:flex; flex-direction: column;">
+    <div style="display:flex; flex-direction: row;" *ngFor="let row of getRow()">
+        <div  style="display:flex; flex-direction: column;" *ngFor="let feild  of getRowFeilds(row)">
+            <label style="display:block;" [for]="feild.fieldName">{{feild.fieldTitle}}</label>
+            <app-coustom-input [FeildInfo]="feild"></app-coustom-input>
+        </div>
     </div>
 </div>

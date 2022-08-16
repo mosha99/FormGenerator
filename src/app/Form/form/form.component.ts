@@ -1,5 +1,6 @@
 import { not } from '@angular/compiler/src/output/output_ast';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit } from '@angular/core';
+import { CoustomInputComponent } from 'src/app/coustomInput/coustom-input/coustom-input.component';
 
 @Component({
   selector: 'app-form',
@@ -10,36 +11,80 @@ export class FormComponent implements OnInit {
 
   constructor() { }
 
+  Events: EventEmitter<any>[] = new Array<EventEmitter<any>>();
 
-  Feilds: any[] = [
-          {
-        "fieldName": "title",
-        "fieldTitle": "عنوان",
-        "fieldRowId": 1,
-        "fieldColId": 1,
-        "fieldRejex": "",
-        "fieldRejexMassage": "",
-        "isRequierd": true,
-        "isRequierdMessage": "",
-        "fieldType": "string",
-        "defulteValue": "string"
-      },
-      {
-        "fieldName": "count",
-        "fieldTitle": "تعداد",
-        "fieldRowId": 2,
-        "fieldColId": 1,
-        "fieldRejex": "",
-        "fieldRejexMassage": "",
-        "isRequierd": true,
-        "isRequierdMessage": "",
-        "fieldType": "int",
-        "defulteValue": "string"
-      }
+
+  Feilds: Feild[] = [
+    {
+
+      "fieldId": 1,
+      "fieldParentId": undefined,
+      "fieldName": "title",
+      "fieldTitle": "عنوان",
+      "fieldRowId": 1,
+      "fieldColId": 1,
+      "fieldRejex": "",
+      "fieldRejexMassage": "",
+      "isRequierd": true,
+      "isRequierdMessage": "",
+      "fieldType": fieldTypeEnum.int,
+      "defulteValue": "string"
+    }
+    ,{
+      "fieldName": "count1",
+      "fieldId": 2,
+      "fieldParentId": 1,
+      "fieldTitle": "تعداد",
+      "fieldRowId": 2,
+      "fieldColId": 1,
+      "fieldRejex": "",
+      "fieldRejexMassage": "",
+      "isRequierd": true,
+      "isRequierdMessage": "",
+      "fieldType": fieldTypeEnum.steing,
+      "defulteValue": "string"
+    }
+    ,{
+      "fieldName": "count2",
+      "fieldId": 3,
+      "fieldParentId": 2,
+      "fieldTitle": "تعداد",
+      "fieldRowId": 2,
+      "fieldColId": 1,
+      "fieldRejex": "",
+      "fieldRejexMassage": "",
+      "isRequierd": true,
+      "isRequierdMessage": "",
+      "fieldType": fieldTypeEnum.int,
+      "defulteValue": "string"
+    }
+    ,{
+      "fieldName": "count3",
+      "fieldId": 4,
+      "fieldParentId": 3,
+      "fieldTitle": "تعداد",
+      "fieldRowId": 2,
+      "fieldColId": 1,
+      "fieldRejex": "",
+      "fieldRejexMassage": "",
+      "isRequierd": true,
+      "isRequierdMessage": "",
+      "fieldType": fieldTypeEnum.steing,
+      "defulteValue": "string"
+    }
   ];
 
   ngOnInit(): void {
-    let x = this.getRow();
+    this.Feilds.forEach(element => {
+
+      let Events = new EventEmitter<number[]>();
+      element.onchenge = Events;
+      this.Feilds.filter(x => x.fieldParentId == element.fieldId).forEach(e => {
+        e.ParentOnchenge = Events;
+      });
+
+    });
+
   }
 
 
@@ -50,6 +95,8 @@ export class FormComponent implements OnInit {
         Row.push(element);
       }
     });
+
+
     return Row;
   }
 
@@ -59,3 +106,27 @@ export class FormComponent implements OnInit {
   }
 
 } 
+
+
+export interface Feild{
+   fieldName :string ,
+   fieldId : number,
+   fieldParentId? : number,
+   fieldTitle :  string ,
+   fieldRowId : number,
+   fieldColId : number,
+   fieldRejex :  string ,
+   fieldRejexMassage :  string ,
+   isRequierd : boolean,
+   isRequierdMessage :  string ,
+   fieldType :  fieldTypeEnum ,
+   defulteValue :  any ,
+   onchenge ?:EventEmitter<number[]>,
+   ParentOnchenge ?:EventEmitter<number[]>,
+}
+
+
+export enum fieldTypeEnum{
+  steing,
+  int
+}
