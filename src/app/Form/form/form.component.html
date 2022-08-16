@@ -1,0 +1,9 @@
+<a href="">fsd</a>
+
+<div *ngFor="let row of getRow()">
+    <div *ngFor="let feild  of getRowFeilds(row)">
+        <p>{{feild['fieldType']}}</p>
+
+        <{{'app-coustom-input'}} [type]="feild['fieldType']"></{{'app-coustom-input'}}>
+    </div>
+</div>
