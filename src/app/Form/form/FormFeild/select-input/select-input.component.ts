@@ -2,11 +2,11 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Field } from '../../form.component';
 
 @Component({
-  selector: 'app-text-input',
-  templateUrl: './text-input.component.html',
-  styleUrls: ['./text-input.component.css']
+  selector: 'app-select-input',
+  templateUrl: './select-input.component.html',
+  styleUrls: ['./select-input.component.css']
 })
-export class TextInputComponent implements OnInit {
+export class SelectInputComponent implements OnInit {
 
   @Input() FieldInfo!: Field;
   @Input() Value!: string ;

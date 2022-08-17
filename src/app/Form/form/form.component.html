@@ -1,9 +1,14 @@
-<a href="">fsd</a>
-<div style="display:flex; flex-direction: column;">
-    <div style="display:flex; flex-direction: row;" *ngFor="let row of getRow()">
-        <div  style="display:flex; flex-direction: column;" *ngFor="let feild  of getRowFeilds(row)">
-            <label style="display:block;" [for]="feild.fieldName">{{feild.fieldTitle}}</label>
-            <app-coustom-input [FeildInfo]="feild"></app-coustom-input>
+<Form style=" display: flex; flex-direction: column; justify-content: center;  border-style: solid;border-width: 1px; ">
+    <div style="display:flex; flex-direction: column; margin: 10px;">
+        <div style="display: flex;" *ngFor="let row of getRow()">
+            <div style="display:block; " class="form-group" *ngFor="let Field  of getRowFields(row)">
+                <app-coustom-input [FieldInfo]="Field"></app-coustom-input>
+            </div>
         </div>
     </div>
-</div>
+    <button class="btn btn-primary" type="button" (click)="submitEvents.emit()">submit</button>
+</Form>
+
+
+
+

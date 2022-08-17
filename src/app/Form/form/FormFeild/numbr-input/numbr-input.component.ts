@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Feild } from '../../form.component';
+import { Field } from '../../form.component';
 
 @Component({
   selector: 'app-numbr-input',
@@ -8,13 +8,17 @@ import { Feild } from '../../form.component';
 })
 export class NumbrInputComponent implements OnInit {
 
-  @Input() FeildInfo?: Feild;
-  @Input() Value: string = '';
-  @Output() OnModelChenge: any = new EventEmitter<any>();
+  @Input() FieldInfo!: Field;
+  @Input() Value!: string;
+  @Output() ValueChange: EventEmitter<any> = new EventEmitter<any>();
+
+  @Input() validClass!: string;
 
   constructor() {
   }
+
   ngOnInit(): void {
   }
+
 
 }

@@ -1,1 +1,2 @@
-<input type="number" [ngModel]="Value"  (ngModelChange)="OnModelChenge.emit($event)" name="{{FeildInfo?.fieldName}}" id="{{FeildInfo?.fieldName}}" >
+<input class="form-control  {{validClass}}"  type="number" [(ngModel)]="Value" (ngModelChange)="ValueChange.emit(this.Value);" name="{{FieldInfo.fieldName}}"
+    id="{{FieldInfo.fieldName}}">

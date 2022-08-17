@@ -11,10 +11,13 @@ export class FormComponent implements OnInit {
 
   constructor() { }
 
-  Events: EventEmitter<any>[] = new Array<EventEmitter<any>>();
+  ErroListChange: EventEmitter<any> = new EventEmitter<any>();
+  submitEvents: EventEmitter<any> = new EventEmitter<any>();
 
 
-  Feilds: Feild[] = [
+  Errors: Array<FieldsError> = new Array<FieldsError>();
+
+  Fields: Field[] = [
     {
 
       "fieldId": 1,
@@ -23,74 +26,61 @@ export class FormComponent implements OnInit {
       "fieldTitle": "عنوان",
       "fieldRowId": 1,
       "fieldColId": 1,
-      "fieldRejex": "",
-      "fieldRejexMassage": "",
-      "isRequierd": true,
-      "isRequierdMessage": "",
-      "fieldType": fieldTypeEnum.int,
-      "defulteValue": "string"
-    }
-    ,{
-      "fieldName": "count1",
-      "fieldId": 2,
-      "fieldParentId": 1,
-      "fieldTitle": "تعداد",
-      "fieldRowId": 2,
-      "fieldColId": 1,
-      "fieldRejex": "",
-      "fieldRejexMassage": "",
-      "isRequierd": true,
-      "isRequierdMessage": "",
+      "fieldRejex": /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+      "fieldRejexmessage": "این فیلد نامعتبر است",
+      "isRequierd": false,
+      "isRequierdMessage": "اجباری است",
       "fieldType": fieldTypeEnum.steing,
       "defulteValue": "string"
     }
-    ,{
-      "fieldName": "count2",
-      "fieldId": 3,
-      "fieldParentId": 2,
+    , {
+      "fieldName": "count1",
+      "fieldId": 2,
+      "fieldParentId": undefined,
       "fieldTitle": "تعداد",
       "fieldRowId": 2,
       "fieldColId": 1,
       "fieldRejex": "",
-      "fieldRejexMassage": "",
+      "fieldRejexmessage": "",
       "isRequierd": true,
-      "isRequierdMessage": "",
-      "fieldType": fieldTypeEnum.int,
-      "defulteValue": "string"
-    }
-    ,{
-      "fieldName": "count3",
-      "fieldId": 4,
-      "fieldParentId": 3,
-      "fieldTitle": "تعداد",
-      "fieldRowId": 2,
-      "fieldColId": 1,
-      "fieldRejex": "",
-      "fieldRejexMassage": "",
-      "isRequierd": true,
-      "isRequierdMessage": "",
+      "isRequierdMessage": "اجباری است",
       "fieldType": fieldTypeEnum.steing,
       "defulteValue": "string"
     }
   ];
 
-  ngOnInit(): void {
-    this.Feilds.forEach(element => {
 
+  ngOnInit(): void {
+    this.Fields.forEach(element => {
       let Events = new EventEmitter<number[]>();
-      element.onchenge = Events;
-      this.Feilds.filter(x => x.fieldParentId == element.fieldId).forEach(e => {
-        e.ParentOnchenge = Events;
+      element.onChange = Events;
+      element.onErrorChenge = this.ErroListChange;
+      this.Fields.filter(x => x.fieldParentId == element.fieldId).forEach(e => {
+        e.ParentOnChange = Events;
       });
 
     });
 
-  }
+    this.submitEvents.subscribe(x => {
+      this.submit();
+    });
 
+    this.ErroListChange.subscribe((x: FieldsError) => {
+      this.changeErrorListState(x);
+    });
+
+  }
+  submit() {
+    console.log(this.Errors)
+    if (this.Errors.filter(x=>x.Error == true).length != 0) {
+      alert("cheak Error");
+    }
+
+  }
 
   getRow(): number[] {
     let Row: number[] = [];
-    this.Feilds.map(x => x.fieldRowId).forEach(element => {
+    this.Fields.map(x => x.fieldRowId).forEach(element => {
       if (Row.findIndex(x => x == element) == -1) {
         Row.push(element);
       }
@@ -100,33 +90,62 @@ export class FormComponent implements OnInit {
     return Row;
   }
 
-  getRowFeilds(num: number): any[] {
-    let filds = this.Feilds.filter(x => x.fieldRowId == num);
+  getRowFields(num: number): any[] {
+    let filds = this.Fields.filter(x => x.fieldRowId == num);
     return filds;
+
   }
 
-} 
+  changeErrorListState(ErrorState: FieldsError) {
+    let index = this.Errors.findIndex(x => x.fieldId == ErrorState.fieldId);
 
+    if (index == -1) {
+      this.Errors.push(ErrorState)
+    } else {
+      this.Errors[index].Error = ErrorState.Error;
+    }
+  }
 
-export interface Feild{
-   fieldName :string ,
-   fieldId : number,
-   fieldParentId? : number,
-   fieldTitle :  string ,
-   fieldRowId : number,
-   fieldColId : number,
-   fieldRejex :  string ,
-   fieldRejexMassage :  string ,
-   isRequierd : boolean,
-   isRequierdMessage :  string ,
-   fieldType :  fieldTypeEnum ,
-   defulteValue :  any ,
-   onchenge ?:EventEmitter<number[]>,
-   ParentOnchenge ?:EventEmitter<number[]>,
 }
 
 
-export enum fieldTypeEnum{
+export interface Field {
+  fieldName: string,
+  fieldId: number,
+
+  fieldParentId?: number,
+  fieldRequestUrl?: string,
+  fieldRequestType?: fieldRequestTypeEnum,
+
+  fieldTitle: string,
+  fieldRowId: number,
+  fieldColId: number,
+  fieldRejex: string | RegExp,
+  fieldRejexmessage: string,
+  isRequierd: boolean,
+  isRequierdMessage: string,
+  fieldType: fieldTypeEnum,
+  defulteValue: any,
+  onChange?: EventEmitter<number[]>,
+  ParentOnChange?: EventEmitter<number[]>,
+  onErrorChenge?: EventEmitter<FieldsError>
+}
+
+export interface FieldsError {
+  fieldId: number,
+  Error: boolean,
+};
+
+
+
+
+export enum fieldRequestTypeEnum {
+  notRequest,
+  RequestWhenLoad,
+  RequestwhenParentSelect
+}
+
+export enum fieldTypeEnum {
   steing,
   int
 }
