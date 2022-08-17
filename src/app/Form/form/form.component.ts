@@ -1,5 +1,5 @@
 import { not } from '@angular/compiler/src/output/output_ast';
-import { Component, EventEmitter, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CoustomInputComponent } from 'src/app/coustomInput/coustom-input/coustom-input.component';
 
 @Component({
@@ -14,8 +14,9 @@ export class FormComponent implements OnInit {
   ErroListChange: EventEmitter<any> = new EventEmitter<any>();
   submitEvents: EventEmitter<any> = new EventEmitter<any>();
 
+  @Output() GetformResult: EventEmitter<any> = new EventEmitter<any>();
 
-  Errors: Array<FieldsError> = new Array<FieldsError>();
+  FieldsStates: Array<FieldsState> = new Array<FieldsState>();
 
   Fields: Field[] = [
     {
@@ -36,7 +37,7 @@ export class FormComponent implements OnInit {
     , {
       "fieldName": "count1",
       "fieldId": 2,
-      "fieldParentId": 3 ,
+      "fieldParentId": 1,
       "fieldTitle": "تعداد",
       "fieldRowId": 2,
       "fieldColId": 1,
@@ -72,7 +73,35 @@ export class FormComponent implements OnInit {
       "isRequierd": true,
       "isRequierdMessage": "اجباری است",
       "fieldType": fieldTypeEnum.SelectInput,
-      "fieldRequestType" : fieldRequestTypeEnum.RequestwhenParentSelect,
+      "fieldRequestType": fieldRequestTypeEnum.RequestwhenParentSelect,
+      "defulteValue": "string"
+    }, {
+      "fieldName": "select3",
+      "fieldId": 5,
+      "fieldParentId": 4,
+      "fieldTitle": "3آیتم ها",
+      "fieldRowId": 3,
+      "fieldColId": 1,
+      "fieldRejex": "",
+      "fieldRejexmessage": "",
+      "isRequierd": true,
+      "isRequierdMessage": "اجباری است",
+      "fieldType": fieldTypeEnum.SelectInput,
+      "fieldRequestType": fieldRequestTypeEnum.RequestwhenParentSelect,
+      "defulteValue": "string"
+    }, {
+      "fieldName": "select4",
+      "fieldId": 6,
+      "fieldParentId": 5,
+      "fieldTitle": "4آیتم ها",
+      "fieldRowId": 3,
+      "fieldColId": 1,
+      "fieldRejex": "",
+      "fieldRejexmessage": "",
+      "isRequierd": true,
+      "isRequierdMessage": "اجباری است",
+      "fieldType": fieldTypeEnum.SelectInput,
+      "fieldRequestType": fieldRequestTypeEnum.RequestwhenParentSelect,
       "defulteValue": "string"
     }
   ];
@@ -93,15 +122,24 @@ export class FormComponent implements OnInit {
       this.submit();
     });
 
-    this.ErroListChange.subscribe((x: FieldsError) => {
+    this.ErroListChange.subscribe((x: FieldsState) => {
       this.changeErrorListState(x);
     });
 
   }
   submit() {
-    console.log(this.Errors)
-    if (this.Errors.filter(x=>x.Error == true).length != 0) {
+    console.log(this.FieldsStates)
+    if (this.FieldsStates.filter(x => x.Error == true).length != 0) {
       alert("cheak Error");
+    } else {
+      let result: any[] = [];
+
+
+      var data = this.FieldsStates.forEach(x => {
+        result.push({ 'name' :this.Fields.find(y => y.fieldId == x.fieldId)?.fieldName,'value':  x.value})
+      });
+ 
+      this.GetformResult.emit(result);
     }
 
   }
@@ -124,13 +162,15 @@ export class FormComponent implements OnInit {
 
   }
 
-  changeErrorListState(ErrorState: FieldsError) {
-    let index = this.Errors.findIndex(x => x.fieldId == ErrorState.fieldId);
+  changeErrorListState(FieldState: FieldsState) {
+
+    let index = this.FieldsStates.findIndex(x => x.fieldId == FieldState.fieldId);
 
     if (index == -1) {
-      this.Errors.push(ErrorState)
+      this.FieldsStates.push(FieldState)
     } else {
-      this.Errors[index].Error = ErrorState.Error;
+      this.FieldsStates[index].Error = FieldState.Error;
+      this.FieldsStates[index].value = FieldState.value;
     }
   }
 
@@ -156,17 +196,18 @@ export interface Field {
   defulteValue: any,
   onChange?: EventEmitter<number[]>,
   ParentOnChange?: EventEmitter<number[]>,
-  onErrorChenge?: EventEmitter<FieldsError>
+  onErrorChenge?: EventEmitter<FieldsState>
 }
 
-export interface FieldsError {
+export interface FieldsState {
+  value: any,
   fieldId: number,
   Error: boolean,
 };
 
-export interface SelectItem{
-   value:number,
-   text:string
+export interface SelectItem {
+  value: number,
+  text: string
 }
 
 

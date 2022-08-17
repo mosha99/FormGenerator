@@ -9,13 +9,16 @@ import { Field, fieldRequestTypeEnum, SelectItem } from '../../form.component';
 export class SelectInputComponent implements OnInit, OnChanges {
 
   @Input() FieldInfo!: Field;
-  @Input() Value!: number;
+  @Input() ParentValue!: any;
+
+  @Input() Value?: number;
   @Output() ValueChange: any = new EventEmitter<any>();
+
+
   @Input() validClass!: string;
 
   Items: Array<SelectItem> = new Array<SelectItem>();
-
-  selectedItem: number = 0;
+  ParentSelectedItem: number = 0;
 
   testItem: Array<SelectItem> = [
     { text: 'item 1 - 1', value: 11 },
@@ -42,7 +45,7 @@ export class SelectInputComponent implements OnInit, OnChanges {
       case fieldRequestTypeEnum.RequestwhenParentSelect: 
         if(this.Value == 0) return;
 
-        let val:number = this.Value , mx:number = val-(-5) , mn:number =val-5 ;
+        let val:number = this.ParentValue , mx:number = val-(-5) , mn:number =val-5 ;
         this.Items = this.testItem.filter(x => (x.value >= mn && x.value <= mx));
         break;
       case fieldRequestTypeEnum.InitialazeDefultValue:
@@ -60,9 +63,26 @@ export class SelectInputComponent implements OnInit, OnChanges {
   constructor() {
   }
   ngOnChanges(changes: SimpleChanges): void {
+
+
+    //alert(this.FieldInfo.fieldName);
+
+    if(this.ParentValue != undefined){
+      if(this.ParentSelectedItem != this.ParentValue){
+        this.ParentSelectedItem = this.ParentValue;
+
+        this.Value =undefined;
+        this.ValueChange.emit(this.Value);
+
+      }
+
+    }
+
     this.ItemInitialize();
+
   }
   ngOnInit(): void {
+
   }
 
 }

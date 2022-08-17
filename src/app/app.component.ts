@@ -7,4 +7,10 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'FormGenerator';
+  formValue!:any[] ;
+
+setFormValue(data:any){
+  this.formValue =(data);
+}
+
 }

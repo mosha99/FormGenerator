@@ -1,5 +1,5 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { Field, FieldsError, fieldTypeEnum } from 'src/app/Form/form/form.component';
+import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Field, FieldsState , fieldTypeEnum } from 'src/app/Form/form/form.component';
 
 
 @Component({
@@ -8,10 +8,13 @@ import { Field, FieldsError, fieldTypeEnum } from 'src/app/Form/form/form.compon
   styleUrls: ['./coustom-input.component.css',]
 
 })
-export class CoustomInputComponent implements OnInit {
+export class CoustomInputComponent implements OnInit  {
+
 
   @Input() FieldInfo!: Field;
   @Input() Value!: any;
+
+  @Input() ParentValue!: any;
 
   Message?: string;
   chenge: boolean = false;
@@ -21,14 +24,15 @@ export class CoustomInputComponent implements OnInit {
   ngOnInit(): void {
     this.Value = this.Value;
     this.FieldInfo?.ParentOnChange?.subscribe((v: any) => {
-      this.Value = v[0];
+      //this.Value = v[0];
+      this.ParentValue = v[0];
       this.OnCheange(v[0])
     });
     this.GetErrorState();
 
   }
 
-  OnCheange(event: number) {
+  OnCheange(event: any) {
     this.chenge = true;
     this.FieldInfo?.onChange?.emit([event]);
   }
@@ -38,10 +42,12 @@ export class CoustomInputComponent implements OnInit {
 
   GetErrorState() {
     let isValid: boolean = this.Error();
-    if (this.error == !isValid) { }
-    else {
+    //if (this.error == !isValid && ) { }
+    //else
+     {
       this.error = !isValid;
-      let ErrorState: FieldsError = {
+      let ErrorState: FieldsState = {
+        value : this.Value,
         Error: !isValid,
         fieldId: this.FieldInfo.fieldId,
       }

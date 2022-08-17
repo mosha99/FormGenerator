@@ -9,6 +9,8 @@ import { Field } from '../../form.component';
 export class NumbrInputComponent implements OnInit {
 
   @Input() FieldInfo!: Field;
+  @Input() ParentValue!: string;
+
   @Input() Value!: number;
   @Output() ValueChange: EventEmitter<any> = new EventEmitter<any>();
 
@@ -18,7 +20,8 @@ export class NumbrInputComponent implements OnInit {
   }
 
   ngOnInit(): void {
-  }
+    alert(this.ParentValue); 
+   }
 
 
 }
