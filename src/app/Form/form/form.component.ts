@@ -36,7 +36,7 @@ export class FormComponent implements OnInit {
     , {
       "fieldName": "count1",
       "fieldId": 2,
-      "fieldParentId": undefined,
+      "fieldParentId": 3 ,
       "fieldTitle": "تعداد",
       "fieldRowId": 2,
       "fieldColId": 1,
@@ -45,6 +45,34 @@ export class FormComponent implements OnInit {
       "isRequierd": true,
       "isRequierdMessage": "اجباری است",
       "fieldType": fieldTypeEnum.steing,
+      "defulteValue": "string"
+    }
+    , {
+      "fieldName": "select1",
+      "fieldId": 3,
+      "fieldParentId": undefined,
+      "fieldTitle": "آیتم ها",
+      "fieldRowId": 3,
+      "fieldColId": 1,
+      "fieldRejex": "",
+      "fieldRejexmessage": "",
+      "isRequierd": true,
+      "isRequierdMessage": "اجباری است",
+      "fieldType": fieldTypeEnum.SelectInput,
+      "defulteValue": "string"
+    }, {
+      "fieldName": "select2",
+      "fieldId": 4,
+      "fieldParentId": 3,
+      "fieldTitle": "2آیتم ها",
+      "fieldRowId": 3,
+      "fieldColId": 1,
+      "fieldRejex": "",
+      "fieldRejexmessage": "",
+      "isRequierd": true,
+      "isRequierdMessage": "اجباری است",
+      "fieldType": fieldTypeEnum.SelectInput,
+      "fieldRequestType" : fieldRequestTypeEnum.RequestwhenParentSelect,
       "defulteValue": "string"
     }
   ];
@@ -136,16 +164,21 @@ export interface FieldsError {
   Error: boolean,
 };
 
-
+export interface SelectItem{
+   value:number,
+   text:string
+}
 
 
 export enum fieldRequestTypeEnum {
-  notRequest,
+  NotRequest,
   RequestWhenLoad,
-  RequestwhenParentSelect
+  RequestwhenParentSelect,
+  InitialazeDefultValue
 }
 
 export enum fieldTypeEnum {
   steing,
-  int
+  int,
+  SelectInput
 }

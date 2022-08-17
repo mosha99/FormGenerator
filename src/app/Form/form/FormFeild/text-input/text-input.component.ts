@@ -9,7 +9,7 @@ import { Field } from '../../form.component';
 export class TextInputComponent implements OnInit {
 
   @Input() FieldInfo!: Field;
-  @Input() Value!: string ;
+  @Input() Value!: string;
   @Output() ValueChange: any = new EventEmitter<any>();
   @Input() validClass!: string;
 

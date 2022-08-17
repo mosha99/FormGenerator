@@ -9,7 +9,7 @@ import { Field } from '../../form.component';
 export class NumbrInputComponent implements OnInit {
 
   @Input() FieldInfo!: Field;
-  @Input() Value!: string;
+  @Input() Value!: number;
   @Output() ValueChange: EventEmitter<any> = new EventEmitter<any>();
 
   @Input() validClass!: string;

@@ -11,7 +11,7 @@ import { Field, FieldsError, fieldTypeEnum } from 'src/app/Form/form/form.compon
 export class CoustomInputComponent implements OnInit {
 
   @Input() FieldInfo!: Field;
-  @Input() Value!: string;
+  @Input() Value!: any;
 
   Message?: string;
   chenge: boolean = false;
