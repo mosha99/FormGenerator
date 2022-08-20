@@ -1,7 +1,3 @@
-<select class=" form-select {{validClass}}" (ngModelChange)="ValueChange.emit(Value)"
-    [name]="FieldInfo.fieldName" [id]="FieldInfo.fieldName" [(ngModel)]="Value"
-    (ngModelChange)="ValueChange.emit(Value)">
-
+<select class=" form-select" [selectedIndex]="getSelectedIndex()" [name]="Name" [id]="Name" [ngModel]="data" (ngModelChange)="DataChange($event)">
     <option *ngFor="let item of Items" [value]="item.value">{{item.text}}</option>
-
-</select>
+</select> 

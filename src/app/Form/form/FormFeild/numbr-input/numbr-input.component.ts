@@ -8,20 +8,17 @@ import { Field } from '../../form.component';
 })
 export class NumbrInputComponent implements OnInit {
 
-  @Input() FieldInfo!: Field;
-  @Input() ParentValue!: string;
-
-  @Input() Value!: number;
-  @Output() ValueChange: EventEmitter<any> = new EventEmitter<any>();
-
-  @Input() validClass!: string;
+  @Input() data: any;
+  @Output() dataChange: EventEmitter<any> = new EventEmitter<any>();
+  @Input() Name !: string;
 
   constructor() {
   }
 
   ngOnInit(): void {
-    alert(this.ParentValue); 
-   }
+  }
 
-
+  DataChange(model: any) {
+    this.dataChange.emit(this.data)
+  }
 }

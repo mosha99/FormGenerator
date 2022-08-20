@@ -6,23 +6,21 @@ import { Field } from '../../form.component';
   templateUrl: './text-input.component.html',
   styleUrls: ['./text-input.component.css']
 })
-export class TextInputComponent implements OnInit, OnChanges {
+export class TextInputComponent implements OnInit {
 
-  @Input() FieldInfo!: Field;
 
-  @Input() ParentValue!: string;
-
-  @Input() Value!: string;
-  @Output() ValueChange: any = new EventEmitter<any>();
-  @Input() validClass!: string;
+  @Input() data: any;
+  @Output() dataChange: EventEmitter<any> = new EventEmitter<any>();
+  @Input() Name !: string;
 
   constructor() {
   }
-  ngOnChanges(changes: SimpleChanges): void {
-    
-    this.Value = this.ParentValue;
-  }
+
   ngOnInit(): void {
+  }
+
+  DataChange(model: any) {
+    this.dataChange.emit(this.data)
   }
 
 }

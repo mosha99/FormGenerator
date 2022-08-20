@@ -2,11 +2,11 @@
     <div style="display:flex; flex-direction: column; margin: 10px;">
         <div style="display: flex;" *ngFor="let row of getRow()">
             <div style="display:block; " class="form-group" *ngFor="let Field  of getRowFields(row)">
-                <app-coustom-input [FieldInfo]="Field"></app-coustom-input>
+                <app-coustom-input [field]="Field"></app-coustom-input>
             </div>
         </div>
     </div>
-    <button class="btn btn-primary" type="button" (click)="submitEvents.emit()">submit</button>
+    <button class="btn btn-primary" type="button" (click)="submitEvents.emit()">submit</button> 
 </Form>
 
 

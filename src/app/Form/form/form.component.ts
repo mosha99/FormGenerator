@@ -1,4 +1,3 @@
-import { not } from '@angular/compiler/src/output/output_ast';
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { CoustomInputComponent } from 'src/app/coustomInput/coustom-input/coustom-input.component';
 
@@ -11,9 +10,9 @@ export class FormComponent implements OnInit {
 
   constructor() { }
 
-  ErroListChange: EventEmitter<any> = new EventEmitter<any>();
-  submitEvents: EventEmitter<any> = new EventEmitter<any>();
+  InputStateList: EventEmitter<FieldsState> = new EventEmitter<FieldsState>();
 
+  submitEvents: EventEmitter<any> = new EventEmitter<any>();
   @Output() GetformResult: EventEmitter<any> = new EventEmitter<any>();
 
   FieldsStates: Array<FieldsState> = new Array<FieldsState>();
@@ -22,12 +21,11 @@ export class FormComponent implements OnInit {
     {
 
       "fieldId": 1,
-      "fieldParentId": undefined,
       "fieldName": "title",
       "fieldTitle": "عنوان",
       "fieldRowId": 1,
       "fieldColId": 1,
-      "fieldRejex": /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+      "fieldRejex":undefined, //^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
       "fieldRejexmessage": "این فیلد نامعتبر است",
       "isRequierd": false,
       "isRequierdMessage": "اجباری است",
@@ -37,112 +35,148 @@ export class FormComponent implements OnInit {
     , {
       "fieldName": "count1",
       "fieldId": 2,
-      "fieldParentId": 1,
       "fieldTitle": "تعداد",
       "fieldRowId": 2,
       "fieldColId": 1,
-      "fieldRejex": "",
+      "fieldRejex": undefined,
       "fieldRejexmessage": "",
       "isRequierd": true,
       "isRequierdMessage": "اجباری است",
       "fieldType": fieldTypeEnum.steing,
-      "defulteValue": "string"
+      "defulteValue": "string",
+
+      "Parents": {
+        parentsId: [1, 6],
+        stringFunction: `function(parentsvalue){ 
+          let valid = parentsvalue.find(x=>x.fieldId == 1)?.value > 22 && parentsvalue.find(x=>x.fieldId == 6)?.value == 4
+          return valid;
+          }`
+      }
     }
     , {
-      "fieldName": "select1",
+      "fieldName": "select3",
       "fieldId": 3,
-      "fieldParentId": undefined,
       "fieldTitle": "آیتم ها",
       "fieldRowId": 3,
       "fieldColId": 1,
-      "fieldRejex": "",
+      "fieldRejex": undefined,
       "fieldRejexmessage": "",
+      "fieldRequestUrl": "US.COM",
       "isRequierd": true,
       "isRequierdMessage": "اجباری است",
       "fieldType": fieldTypeEnum.SelectInput,
       "defulteValue": "string"
-    }, {
-      "fieldName": "select2",
+    },
+    {
+      "fieldName": "select4",
       "fieldId": 4,
-      "fieldParentId": 3,
       "fieldTitle": "2آیتم ها",
       "fieldRowId": 3,
       "fieldColId": 1,
-      "fieldRejex": "",
+      "fieldRejex": undefined,
+      "fieldRequestUrl": "YOU.COM",
+      "fieldRequestType": fieldRequestTypeEnum.RequestwhenParentSelect,
       "fieldRejexmessage": "",
       "isRequierd": true,
       "isRequierdMessage": "اجباری است",
       "fieldType": fieldTypeEnum.SelectInput,
-      "fieldRequestType": fieldRequestTypeEnum.RequestwhenParentSelect,
-      "defulteValue": "string"
-    }, {
-      "fieldName": "select3",
+      "defulteValue": "string",
+      "Parents": {
+        parentsId: [3],
+      }
+    },
+    {
+      "fieldName": "select5",
       "fieldId": 5,
-      "fieldParentId": 4,
       "fieldTitle": "3آیتم ها",
       "fieldRowId": 3,
       "fieldColId": 1,
-      "fieldRejex": "",
+      "fieldRequestUrl": 'ME.COM',
+      "fieldRequestType": fieldRequestTypeEnum.RequestwhenParentSelect,
+      "fieldRejex": undefined,
       "fieldRejexmessage": "",
       "isRequierd": true,
       "isRequierdMessage": "اجباری است",
       "fieldType": fieldTypeEnum.SelectInput,
-      "fieldRequestType": fieldRequestTypeEnum.RequestwhenParentSelect,
-      "defulteValue": "string"
-    }, {
-      "fieldName": "select4",
+      "defulteValue": "string",
+      "Parents": {
+        parentsId: [4],
+      }
+    },
+    {
+      "fieldName": "select6",
       "fieldId": 6,
-      "fieldParentId": 5,
       "fieldTitle": "4آیتم ها",
       "fieldRowId": 3,
       "fieldColId": 1,
-      "fieldRejex": "",
+      "fieldRequestUrl": 'oo.COM',
+      "fieldRequestType": fieldRequestTypeEnum.RequestwhenParentSelect,
+      "fieldRejex": undefined,
       "fieldRejexmessage": "",
       "isRequierd": true,
       "isRequierdMessage": "اجباری است",
       "fieldType": fieldTypeEnum.SelectInput,
-      "fieldRequestType": fieldRequestTypeEnum.RequestwhenParentSelect,
-      "defulteValue": "string"
-    }
+      "defulteValue": "string",
+      "Parents": {
+        parentsId: [5],
+      }
+    },
   ];
 
 
   ngOnInit(): void {
-    this.Fields.forEach(element => {
-      let Events = new EventEmitter<number[]>();
-      element.onChange = Events;
-      element.onErrorChenge = this.ErroListChange;
-      this.Fields.filter(x => x.fieldParentId == element.fieldId).forEach(e => {
-        e.ParentOnChange = Events;
+    //init Events And parents
+    this.Fields.forEach(field => {
+
+      let thisFieldEvent: EventEmitter<FieldsState> = new EventEmitter<FieldsState>();
+
+      let fieldEvent: FieldEvents = {
+        onChange: thisFieldEvent,
+        formListener: this.InputStateList,
+      }
+      field.Events = fieldEvent;
+    });
+    this.Fields.forEach(field => {
+      //set parent events
+      if (field.Parents != undefined && field.Parents?.parentsId?.length >= 1) {
+        let pI: number[] = field.Parents?.parentsId;
+        let events = this.Fields.filter(x => pI.findIndex(z => z == x.fieldId) != -1).map(x => x.Events!.onChange);
+        field.Events!.ParentsChanges = events;
+      }
+      let Sf = field.Parents?.stringFunction;
+      if (Sf != undefined) {
+        var func = new Function("return (" + Sf + ")")();
+        field.Parents!.isView = func;
+      }
+    });
+    // end
+
+    this.Fields.map(y => y.Events!.onChange).forEach(e => {
+      e.subscribe((data: FieldsState) => {
+        let index = this.FieldsStates.findIndex(x => x.fieldId == data.fieldId);
+        if (index == -1) {
+          if (this.FieldsStates == undefined) this.FieldsStates = new Array<FieldsState>();
+          this.FieldsStates.push(data);
+        } else {
+          this.FieldsStates[index].value = data.value;
+          this.FieldsStates[index].Error = data.Error;
+        }
       });
+    })
 
-    });
+    this.submitEvents.subscribe(() => {
+      let ErrorCount = this.FieldsStates.filter(y => y.Error == true);
+      if (ErrorCount.length > 0) alert('error');
+      else {
 
-    this.submitEvents.subscribe(x => {
-      this.submit();
-    });
+        const clone = JSON.parse(JSON.stringify(this.FieldsStates));
 
-    this.ErroListChange.subscribe((x: FieldsState) => {
-      this.changeErrorListState(x);
-    });
+        this.GetformResult.emit(clone);
+      }
+    })
 
   }
-  submit() {
-    console.log(this.FieldsStates)
-    if (this.FieldsStates.filter(x => x.Error == true).length != 0) {
-      alert("cheak Error");
-    } else {
-      let result: any[] = [];
 
-
-      var data = this.FieldsStates.forEach(x => {
-        result.push({ 'name' :this.Fields.find(y => y.fieldId == x.fieldId)?.fieldName,'value':  x.value})
-      });
- 
-      this.GetformResult.emit(result);
-    }
-
-  }
 
   getRow(): number[] {
     let Row: number[] = [];
@@ -155,23 +189,10 @@ export class FormComponent implements OnInit {
 
     return Row;
   }
-
   getRowFields(num: number): any[] {
     let filds = this.Fields.filter(x => x.fieldRowId == num);
     return filds;
 
-  }
-
-  changeErrorListState(FieldState: FieldsState) {
-
-    let index = this.FieldsStates.findIndex(x => x.fieldId == FieldState.fieldId);
-
-    if (index == -1) {
-      this.FieldsStates.push(FieldState)
-    } else {
-      this.FieldsStates[index].Error = FieldState.Error;
-      this.FieldsStates[index].value = FieldState.value;
-    }
   }
 
 }
@@ -181,22 +202,59 @@ export interface Field {
   fieldName: string,
   fieldId: number,
 
-  fieldParentId?: number,
   fieldRequestUrl?: string,
   fieldRequestType?: fieldRequestTypeEnum,
 
   fieldTitle: string,
   fieldRowId: number,
   fieldColId: number,
-  fieldRejex: string | RegExp,
+  fieldType: fieldTypeEnum,
+  defulteValue: any,
+
+
+  //validation 
+  fieldRejex?: string | RegExp,
   fieldRejexmessage: string,
   isRequierd: boolean,
   isRequierdMessage: string,
-  fieldType: fieldTypeEnum,
-  defulteValue: any,
-  onChange?: EventEmitter<number[]>,
-  ParentOnChange?: EventEmitter<number[]>,
-  onErrorChenge?: EventEmitter<FieldsState>
+  //validation End
+
+  Events?: FieldEvents,// => از فرانت پر میشود
+  Parents?: parents,
+}
+
+export interface parents {
+  parentsId: number[],
+  stringFunction?: string,
+  isView?: (params: any[]) => boolean, //  => از فرانت پر میشود
+}
+export enum fieldRequestTypeEnum {
+  RequestWhenLoad,
+  RequestwhenParentSelect,
+}
+
+export enum fieldTypeEnum {
+  steing,
+  int,
+  SelectInput
+}
+
+export interface SelectItem {
+  value: number,
+  text: string,
+  selected: boolean
+}
+export interface FieldEvents {
+  onChange: EventEmitter<FieldsState>,
+  formListener: EventEmitter<FieldsState>,
+  ParentsChanges?: EventEmitter<FieldsState>[],
+}
+
+
+
+export interface UrlAndData {
+  Url: string,
+  Data: any
 }
 
 export interface FieldsState {
@@ -205,21 +263,6 @@ export interface FieldsState {
   Error: boolean,
 };
 
-export interface SelectItem {
-  value: number,
-  text: string
-}
 
 
-export enum fieldRequestTypeEnum {
-  NotRequest,
-  RequestWhenLoad,
-  RequestwhenParentSelect,
-  InitialazeDefultValue
-}
 
-export enum fieldTypeEnum {
-  steing,
-  int,
-  SelectInput
-}

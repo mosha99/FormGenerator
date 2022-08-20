@@ -20,6 +20,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatButtonModule } from '@angular/material/button';
 import { SelectInputComponent } from './Form/form/FormFeild/select-input/select-input.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { SelectInputComponent } from './Form/form/FormFeild/select-input/select-
     MatSelectModule,
     MatRadioModule,
     MatButtonModule,
+    HttpClientModule,
   ],
   exports:[
     MatTableModule,

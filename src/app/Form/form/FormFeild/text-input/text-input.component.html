@@ -1,6 +1,1 @@
-<input 
-class="form-control {{validClass}}" 
-type="text" [(ngModel)]="Value" 
-(ngModelChange)="ValueChange.emit(Value)"
-name="{{FieldInfo.fieldName}}" 
-id="{{FieldInfo.fieldName}}">
+<input class="form-control " type="text" [(ngModel)]="data"(ngModelChange)="DataChange($event)"[name]="Name" [id]="Name">

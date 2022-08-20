@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
-import { Field, fieldRequestTypeEnum, SelectItem } from '../../form.component';
+import { Field, fieldRequestTypeEnum, SelectItem, UrlAndData } from '../../form.component';
 
 @Component({
   selector: 'app-select-input',
@@ -8,81 +8,50 @@ import { Field, fieldRequestTypeEnum, SelectItem } from '../../form.component';
 })
 export class SelectInputComponent implements OnInit, OnChanges {
 
-  @Input() FieldInfo!: Field;
-  @Input() ParentValue!: any;
+  @Input() data: any;
+  @Input() RequestType?: fieldRequestTypeEnum;
+  @Output() dataChange: EventEmitter<any> = new EventEmitter<any>();
 
-  @Input() Value?: number;
-  @Output() ValueChange: any = new EventEmitter<any>();
+  Items: SelectItem[] = new Array<SelectItem>();
+  TestItems: SelectItem[] = [
+    { selected: false, text: "i1", value: 1 },
+    { selected: false, text: "i2", value: 2 },
+    { selected: false, text: "i3", value: 3 },
+    { selected: false, text: "i4", value: 4 },
+    { selected: false, text: "i5", value: 5 },
+  ];
 
-
-  @Input() validClass!: string;
-
-  Items: Array<SelectItem> = new Array<SelectItem>();
-  ParentSelectedItem: number = 0;
-
-  testItem: Array<SelectItem> = [
-    { text: 'item 1 - 1', value: 11 },
-    { text: 'item 1 - 2', value: 12 },
-    { text: 'item 1 - 3', value: 13 },
-    { text: 'item 1 - 4', value: 14 },
-    { text: 'item 2 - 1', value: 21 },
-    { text: 'item 2 - 2', value: 22 },
-    { text: 'item 2 - 3', value: 23 },
-    { text: 'item 2 - 4', value: 24 },
-    { text: 'item 3 - 1', value: 31 },
-    { text: 'item 3 - 2', value: 32 },
-    { text: 'item 3 - 3', value: 33 },
-    { text: 'item 3 - 4', value: 34 }
-  ]
-
-
-  ItemInitialize() {
-    switch (this.FieldInfo.fieldRequestType) {
-
-      case fieldRequestTypeEnum.RequestWhenLoad:
-        this.Items = this.testItem;
-        break;
-      case fieldRequestTypeEnum.RequestwhenParentSelect: 
-        if(this.Value == 0) return;
-
-        let val:number = this.ParentValue , mx:number = val-(-5) , mn:number =val-5 ;
-        this.Items = this.testItem.filter(x => (x.value >= mn && x.value <= mx));
-        break;
-      case fieldRequestTypeEnum.InitialazeDefultValue:
-        this.Items = this.FieldInfo.defulteValue;
-        break;
-      default:
-        this.Items = this.testItem;
-        break;
-    }
-  }
-
-
-
+  @Input() Name !: string;
+  @Input() UrlAndData?: UrlAndData;
 
   constructor() {
   }
   ngOnChanges(changes: SimpleChanges): void {
+    console.log(this.UrlAndData);
+    if (this.UrlAndData?.Data != undefined)
+      this.Items = this.TestItems.filter(x => x.value > this.UrlAndData!.Data[0].value)
+  }
 
-
-    //alert(this.FieldInfo.fieldName);
-
-    if(this.ParentValue != undefined){
-      if(this.ParentSelectedItem != this.ParentValue){
-        this.ParentSelectedItem = this.ParentValue;
-
-        this.Value =undefined;
-        this.ValueChange.emit(this.Value);
-
-      }
-
+  ngOnInit(): void {
+    if (this.UrlAndData?.Url != undefined) {
+      /*
+      api.post(this.UrlAndData.Url,this.UrlAndData.data).subscribe((x:any[])=>{
+       this.Items =x;
+      })
+      */
     }
-
-    this.ItemInitialize();
+    console.log(this.UrlAndData?.Data);
+    if (this.RequestType != fieldRequestTypeEnum.RequestwhenParentSelect)
+      this.Items = this.TestItems;
 
   }
-  ngOnInit(): void {
 
+  DataChange(model: any) {
+    this.dataChange.emit(model)
+  }
+
+  getSelectedIndex() {
+    return this.Items.findIndex(x => x.selected == true);
   }
 
 }

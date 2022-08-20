@@ -1,5 +1,7 @@
-<label style="display:block ;direction: rtl;" [for]="FieldInfo.fieldName">{{FieldInfo.fieldTitle}}</label>
-<app-text-input     [(Value)]="Value" [ParentValue]="ParentValue" [validClass]="validClass" (ValueChange)="OnCheange($event)"    *ngIf="FieldInfo.fieldType == getfieldTypeEnum().steing" [FieldInfo]="FieldInfo"></app-text-input>
-<app-numbr-input    [(Value)]="Value" [ParentValue]="ParentValue" [validClass]="validClass" (ValueChange)="OnCheange($event)"    *ngIf="FieldInfo.fieldType == getfieldTypeEnum().int" [FieldInfo]="FieldInfo"></app-numbr-input>
-<app-select-input   [(Value)]="Value" [ParentValue]="ParentValue" [validClass]="validClass" (ValueChange)="OnCheange($event)"    *ngIf="FieldInfo.fieldType == getfieldTypeEnum().SelectInput" [FieldInfo]="FieldInfo"></app-select-input>
-<p *ngIf=" GetErrorState()" style="display:block ;direction: rtl; color: red;">{{Message}}</p>
+<div class="{{ fieldsState!.Error == false ? '':'error' }}" *ngIf="isView()">
+<label style="display:block ;direction: rtl;" [for]="field.fieldName">{{field.fieldTitle}}</label>
+<app-text-input     [(data)]="Data" (dataChange)="Datachenge($event)"   *ngIf="field.fieldType == getfieldTypeEnum().steing"      ></app-text-input>
+<app-numbr-input    [(data)]="Data" (dataChange)="Datachenge($event)"   *ngIf="field.fieldType == getfieldTypeEnum().int"         ></app-numbr-input>
+<app-select-input   [(data)]="Data" (dataChange)="Datachenge($event)" [RequestType] = "field.fieldRequestType" [UrlAndData]="UrlAndData" *ngIf="field.fieldType == getfieldTypeEnum().SelectInput" ></app-select-input>
+<p *ngIf="fieldsState!.Error" style="display:block ;direction: rtl; color: red;">{{ErrorMessage}}</p>
+</div>

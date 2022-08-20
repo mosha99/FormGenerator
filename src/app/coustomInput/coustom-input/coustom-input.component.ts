@@ -1,5 +1,5 @@
-import { Component, OnInit, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
-import { Field, FieldsState , fieldTypeEnum } from 'src/app/Form/form/form.component';
+import { Component, OnInit, Input, Output, EventEmitter, } from '@angular/core';
+import { Field, FieldsState, fieldTypeEnum, UrlAndData } from 'src/app/Form/form/form.component';
 
 
 @Component({
@@ -8,79 +8,98 @@ import { Field, FieldsState , fieldTypeEnum } from 'src/app/Form/form/form.compo
   styleUrls: ['./coustom-input.component.css',]
 
 })
-export class CoustomInputComponent implements OnInit  {
+export class CoustomInputComponent implements OnInit {
 
 
-  @Input() FieldInfo!: Field;
-  @Input() Value!: any;
 
-  @Input() ParentValue!: any;
 
-  Message?: string;
-  chenge: boolean = false;
-  error: boolean = false;
-  validClass!: string;
+  @Input() field!: Field;
+  Data: any;
+  fieldsState?: FieldsState;
+  parents: Array<FieldsState> = new Array<FieldsState>();
+  ErrorMessage?: string;
+  UrlAndData!: UrlAndData;
+
 
   ngOnInit(): void {
-    this.Value = this.Value;
-    this.FieldInfo?.ParentOnChange?.subscribe((v: any) => {
-      //this.Value = v[0];
-      this.ParentValue = v[0];
-      this.OnCheange(v[0])
-    });
-    this.GetErrorState();
+    this.UrlAndData = { Data: undefined, Url: this.field.fieldRequestUrl ?? '' };
+    this.fieldsState = {
+      fieldId: this.field.fieldId,
+      Error: this.GetvalidationResult(),
+      value: undefined
+    }
+    this.field.Events?.onChange.emit(this.fieldsState);
+    this.field.Events?.ParentsChanges?.forEach(e => {
+      e.subscribe((data: FieldsState) => {
+        let test = this.field;
+        let index = this.parents.findIndex(x => x.fieldId == data.fieldId);
+        if (index == -1) {
+          if (this.parents == undefined) this.parents = new Array<FieldsState>();
+          this.parents.push(data);
+        } else {
+
+          this.parents[index].value = data.value;
+          this.parents[index].Error = data.Error;
+
+          this.Data = undefined;
+          this.Datachenge(undefined);
+        }
+        this.UrlAndData = { Data: this.parents, Url: this.UrlAndData.Url };
+      });
+    })
+  }
+
+
+
+  Datachenge(changed: any) {
+    this.fieldsState!.value = changed;
+    this.fieldsState!.Error = !this.GetvalidationResult();
+    this.field.Events?.onChange.emit(this.fieldsState)
+  }
+
+
+
+  GetvalidationResult(): boolean {
+    this.RejexpValidation();
+    this.RequierdValidation();
+    if(!this.isView()) return true;
+
+    return this.ErrorMessage == undefined;
+  }
+
+  RejexpValidation():void {
+
+    if (this.field.fieldRejex == undefined) return ;
+
+    
+    let rejex: RegExp = new RegExp(this.field.fieldRejex);
+    let Rejvalid: boolean = rejex.test(this.fieldsState?.value)
+    if (!Rejvalid)
+      this.ErrorMessage = this.field.fieldRejexmessage;
+    else
+      this.ErrorMessage = undefined;
 
   }
 
-  OnCheange(event: any) {
-    this.chenge = true;
-    this.FieldInfo?.onChange?.emit([event]);
+  RequierdValidation() {
+    if (this.field.isRequierd != true) return ;
+    let res = this.fieldsState?.value == undefined
+    if (res)
+      this.ErrorMessage = this.field.isRequierdMessage;
+    else
+      this.ErrorMessage = undefined;
+  }
+
+  isView(): boolean {
+    if (this.field.Parents?.stringFunction != undefined) {
+      let view: boolean = this.field!.Parents!.isView!(this.parents);
+      return view;
+    } else {
+      return true;
+    }
   }
   getfieldTypeEnum() {
     return fieldTypeEnum;
-  }
-
-  GetErrorState() {
-    let isValid: boolean = this.Error();
-    //if (this.error == !isValid && ) { }
-    //else
-     {
-      this.error = !isValid;
-      let ErrorState: FieldsState = {
-        value : this.Value,
-        Error: !isValid,
-        fieldId: this.FieldInfo.fieldId,
-      }
-      this.FieldInfo.onErrorChenge?.emit(ErrorState)
-    }
-    isValid = this.chenge && !isValid;
-    this.validClass = isValid ? "is-invalid":"";
-    return isValid;
-  }
-
-  Error(): boolean {
-    let valid: boolean = (this.RegExpValidator() && this.RequyerdValidator());
-    return valid;
-  }
-
-  RegExpValidator(): boolean {
-    if (this.FieldInfo.fieldRejex == undefined) return true;
-    let validator: RegExp = new RegExp(this.FieldInfo.fieldRejex)
-    let isvalid = validator.test(this.Value)
-    this.Message = undefined;
-    if (!isvalid) {
-      this.Message = this.FieldInfo.fieldRejexmessage;
-    }
-    return isvalid;
-  }
-  RequyerdValidator(): boolean {
-    let isvalid = (!(this.FieldInfo?.isRequierd ?? false) || (this.Value != '' && this.Value != undefined));
-    if (!isvalid) this.Message = "is Requierd";
-    this.Message = undefined;
-    if (!isvalid) {
-      this.Message = this.FieldInfo.isRequierdMessage;
-    }
-    return isvalid;
   }
 }
 
